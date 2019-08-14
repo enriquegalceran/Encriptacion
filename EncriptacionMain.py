@@ -53,6 +53,7 @@ def generar_diccionario_inverso(dic, filename='Dic_alf_inv.json', ordenar=True):
 
 
 def reiniciar_diccionario(dic_alfabeto):
+    dic_alfabeto = {}
     lista = [' ',
              'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
              'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -93,7 +94,7 @@ def texto2numeros(string, dic_alfabeto):
 
     for letra in range(len(string)):
         if string[letra] in dic_alfabeto:
-            salidanumeros = salidanumeros + '{0:03d} '.format(dic_alfabeto[string[letra]])
+            salidanumeros = salidanumeros + '{0:d} '.format(dic_alfabeto[string[letra]])
         else:
             salidanumeros = salidanumeros + string[letra] + ' '
 
@@ -101,6 +102,7 @@ def texto2numeros(string, dic_alfabeto):
 
 
 def numeros2texto(string, dic_inverso):
+    # Separa por espacios
     string = [str(int(i)) for i in string.split()]
     salidatexto = ''
     for numero in range(len(string)):
@@ -157,8 +159,34 @@ def multiples_lineas(texto, diccionario, codificamos=True):
     return lista_final
 
 
-def main():
+def guardar_txt(lista, filename):
+    with open(filename, 'w') as f:
+        for item in lista:
+            f.write("%s\n" % item)
 
+
+def cargar_txt(filename):
+    f = open(filename, "r")
+    lines_largo = list(f)
+    return lines_largo
+
+
+def mostrar_por_pantalla(lista):
+    for item in lista:
+        print(item)
+
+
+def encrypt_information(input_numeros, tipo_de_encriptacion='Romana'):
+    print('Journey Before Destination')
+    if tipo_de_encriptacion == 'Romana':
+        print('Romana')
+        # ToDo: decidir cómo será la forma de escoger el método de encriptación. Lo más lógico sería usar diccionarios.
+        # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
+        #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado. se guarda en archivo aquí
+    return input_numeros
+
+
+def main():
     dic_alfabeto = cargar_json()
     # Reinicio manual del diccionario
     if False:
@@ -172,24 +200,22 @@ def main():
         generar_diccionario_inverso(dic_alfabeto)
         dic_inverso = cargar_json('Dic_alf_inv.json')
 
-    f = open('base.txt', "r")
-    lines_largo = list(f)
+    lines_largo = cargar_txt('base.txt')
 
-    print(lines_largo)
-    print(lines_largo[0].rstrip())
+    entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
+    print(entrada_multiple_numeros)
 
-    salida_multiples_numeros = multiples_lineas(lines_largo, dic_alfabeto)
-    print(salida_multiples_numeros)
+    # Ahora que tenemos una serie de números, encriptamos la información
+    salida_encryption = encrypt_information(entrada_multiple_numeros)
 
-    salida_multiples_texto = multiples_lineas(salida_multiples_numeros, dic_inverso, codificamos=False)
+    salida_multiples_texto = multiples_lineas(salida_encryption, dic_inverso, codificamos=False)
     print(salida_multiples_texto)
 
     test_dum = comprobar_mult(salida_multiples_texto, lines_largo)
     print(test_dum)
 
-    # ToDo: que funcione para varias lineas de texto (debería ser sencillo con funciones anidadas)
-    # ToDO: guardar salida (dum2) a un fichero.txt y que tenga la opción de mostrar por pantalla
-    # ToDo: encontrar el hueco donde se cifra.
+    guardar_txt(entrada_multiple_numeros, 'archivo_numeros.txt')
+    guardar_txt(salida_multiples_texto, 'archivo_texto.txt')
 
 
 
