@@ -52,7 +52,7 @@ def generar_diccionario_inverso(dic, filename='Dic_alf_inv.json', ordenar=True):
     guardar_json(nuevo_diccionario, filename, ordenar=ordenar)
 
 
-def reiniciar_diccionario():
+def reiniciar_diccionario(dic_alfabeto):
     lista = [' ',
              'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
              'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -82,27 +82,7 @@ def comprobar_diccionario_inverso(dic_alf, dic_inv):
     print('Estan todos.')
 
 
-dic_alfabeto = cargar_json()
-dic_inverso = cargar_json('Dic_alf_inv.json')
-comprobar_diccionario_inverso(dic_alfabeto, dic_inverso)
-
-# True: reinicia el diccionario
-if False:
-    reiniciar_diccionario()
-
-
-f = open('base.txt', "r")
-lines_largo = list(f)
-
-
-f = open('base2.txt', "r")
-lines = list(f)
-# print(len(lines))
-# print(lines)
-# print(lines[0])
-
-
-def texto2numeros(string):
+def texto2numeros(string, dic_alfabeto):
     salidanumeros = ''
 
     for letra in range(len(string)):
@@ -114,7 +94,7 @@ def texto2numeros(string):
     return salidanumeros
 
 
-def numeros2texto(string):
+def numeros2texto(string, dic_inverso):
     string = [str(int(i)) for i in string.split()]
     salidatexto = ''
     for numero in range(len(string)):
@@ -124,15 +104,6 @@ def numeros2texto(string):
             salidatexto = salidatexto + str(string[numero])
 
     return salidatexto
-
-
-dum = texto2numeros(lines[0])
-
-print(dum)
-
-dum2 = numeros2texto(dum)
-
-print(dum2)
 
 
 def comprobar_que_son_iguales(texto_nuevo, texto_control, verbose=False):
@@ -151,11 +122,50 @@ def comprobar_que_son_iguales(texto_nuevo, texto_control, verbose=False):
         return False
 
 
-test_dum = comprobar_que_son_iguales(dum2, lines[0])
+def main():
 
-# ToDo: que funcione para varias lineas de texto (debería ser sencillo con funciones anidadas)
-# ToDO: guardar salida (dum2) a un fichero.txt y que tenga la opción de mostrar por pantalla
-# ToDo: encontrar el hueco donde se cifra.
+    dic_alfabeto = cargar_json()
+    dic_inverso = cargar_json('Dic_alf_inv.json')
+    comprobar_diccionario_inverso(dic_alfabeto, dic_inverso)
+
+    # True: reinicia el diccionario
+    if False:
+        reiniciar_diccionario(dic_alfabeto)
+
+    f = open('base.txt', "r")
+    lines_largo = list(f)
+
+    print(lines_largo)
+    print(lines_largo[0].rstrip())
+
+    asdfasd
+
+    f = open('base2.txt', "r")
+    lines = list(f)
+    # print(len(lines))
+    # print(lines)
+    # print(lines[0])
+
+    dum = texto2numeros(lines[0], dic_alfabeto)
+
+    print(dum)
+
+    dum2 = numeros2texto(dum, dic_inverso)
+
+    print(dum2)
+
+    test_dum = comprobar_que_son_iguales(dum2, lines[0])
+
+    # ToDo: que funcione para varias lineas de texto (debería ser sencillo con funciones anidadas)
+    # ToDO: guardar salida (dum2) a un fichero.txt y que tenga la opción de mostrar por pantalla
+    # ToDo: encontrar el hueco donde se cifra.
 
 
 
+
+
+
+
+if __name__ == "__main__":
+
+    main()
