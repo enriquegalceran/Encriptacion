@@ -65,9 +65,17 @@ def reiniciar_diccionario():
 
 
 def comprobar_diccionario_inverso(dic_alf, dic_inv):
+    """
+    Comprueba que todos los valores posibles del diccionario de alfabeto esté en el diccionario inverso. Si no está, o
+    tiene un error, genera un diccionario inverso nuevo
+
+    :param dic_alf:
+    :param dic_inv:
+    :return:
+    """
     for key in dic_alf:
         valor = dic_alf[key]
-        if str(valor) not in dic_inv:
+        if str(valor) not in dic_inv or dic_inv[str(valor)] != key:
             print('Faltan valores. Se vuelve a generar el inverso')
             generar_diccionario_inverso(dic_alf)
             break
@@ -84,10 +92,8 @@ if False:
 
 
 f = open('base.txt', "r")
-lines = list(f)
-# print(len(lines))
-# print(lines)
-# print(lines[0])
+lines_largo = list(f)
+
 
 f = open('base2.txt', "r")
 lines = list(f)
@@ -98,6 +104,7 @@ lines = list(f)
 
 def texto2numeros(string):
     salidanumeros = ''
+
     for letra in range(len(string)):
         if string[letra] in dic_alfabeto:
             salidanumeros = salidanumeros + '{0:03d} '.format(dic_alfabeto[string[letra]])
@@ -107,25 +114,48 @@ def texto2numeros(string):
     return salidanumeros
 
 
-# def numeros2texto(string):
-#     salidatexto = ''
-#     for numero in range(len(string)):
-#         if string[numero]
+def numeros2texto(string):
+    string = [str(int(i)) for i in string.split()]
+    salidatexto = ''
+    for numero in range(len(string)):
+        if string[numero] in dic_inverso:
+            salidatexto = salidatexto + dic_inverso[str(string[numero])]
+        else:
+            salidatexto = salidatexto + str(string[numero])
 
+    return salidatexto
 
 
 dum = texto2numeros(lines[0])
 
 print(dum)
 
+dum2 = numeros2texto(dum)
+
+print(dum2)
+
+
+def comprobar_que_son_iguales(texto_nuevo, texto_control, verbose=False):
+    contador = 0
+    for n in range(len(texto_control.rstrip())):
+        if texto_nuevo[n] == texto_control[n]:
+            contador += 1
+
+    if len(texto_control.rstrip()) == contador:
+        if verbose:
+            print('Coinciden')
+        return True
+    else:
+        if verbose:
+            print('No Coinciden')
+        return False
+
+
+test_dum = comprobar_que_son_iguales(dum2, lines[0])
+
+# ToDo: que funcione para varias lineas de texto (debería ser sencillo con funciones anidadas)
+# ToDO: guardar salida (dum2) a un fichero.txt y que tenga la opción de mostrar por pantalla
+# ToDo: encontrar el hueco donde se cifra.
 
 
 
-
-
-
-
-
-
-
-# mostrar_diccionario(dic_alfabeto)
