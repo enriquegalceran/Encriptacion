@@ -73,13 +73,19 @@ def comprobar_diccionario_inverso(dic_alf, dic_inv):
     :param dic_inv:
     :return:
     """
+    hay_que_hacer_cambios = False
     for key in dic_alf:
         valor = dic_alf[key]
         if str(valor) not in dic_inv or dic_inv[str(valor)] != key:
-            print('Faltan valores. Se vuelve a generar el inverso')
-            generar_diccionario_inverso(dic_alf)
+            hay_que_hacer_cambios = True
             break
-    print('Estan todos.')
+
+    if hay_que_hacer_cambios:
+        print('Faltan valores. Se vuelve a generar el inverso')
+        return True
+    else:
+        print('Estan todos.')
+        return False
 
 
 def texto2numeros(string, dic_alfabeto):
@@ -122,15 +128,49 @@ def comprobar_que_son_iguales(texto_nuevo, texto_control, verbose=False):
         return False
 
 
+def comprobar_mult(texto_new, texto_original, verbose=False):
+    contador_mult = 0
+    for i in range(len(texto_original)):
+        comprobacion = comprobar_que_son_iguales(texto_new[i], texto_original[i])
+        if comprobacion:
+            contador_mult += 1
+        else:
+            raise ValueError('No son iguales')
+    if contador_mult == len(texto_original):
+        if verbose:
+            print('coinciden')
+        return True
+
+
+def multiples_lineas(texto, diccionario, codificamos=True):
+    longitud = len(texto)
+    lista_final = []
+    if codificamos:
+        for i in range(longitud):
+            transformado = texto2numeros(texto[i].rstrip(), dic_alfabeto=diccionario)
+            lista_final.append(transformado.strip())
+    else:
+        for i in range(longitud):
+            transformado = numeros2texto(texto[i].rstrip(), dic_inverso=diccionario)
+            lista_final.append(transformado.strip())
+
+    return lista_final
+
+
 def main():
 
     dic_alfabeto = cargar_json()
-    dic_inverso = cargar_json('Dic_alf_inv.json')
-    comprobar_diccionario_inverso(dic_alfabeto, dic_inverso)
-
-    # True: reinicia el diccionario
+    # Reinicio manual del diccionario
     if False:
         reiniciar_diccionario(dic_alfabeto)
+
+    dic_inverso = cargar_json('Dic_alf_inv.json')
+
+    # Comprobamos que se puede deshacer el cambio
+    hay_que_corregir_inverso = comprobar_diccionario_inverso(dic_alfabeto, dic_inverso)
+    if hay_que_corregir_inverso:
+        generar_diccionario_inverso(dic_alfabeto)
+        dic_inverso = cargar_json('Dic_alf_inv.json')
 
     f = open('base.txt', "r")
     lines_largo = list(f)
@@ -138,23 +178,14 @@ def main():
     print(lines_largo)
     print(lines_largo[0].rstrip())
 
-    asdfasd
+    salida_multiples_numeros = multiples_lineas(lines_largo, dic_alfabeto)
+    print(salida_multiples_numeros)
 
-    f = open('base2.txt', "r")
-    lines = list(f)
-    # print(len(lines))
-    # print(lines)
-    # print(lines[0])
+    salida_multiples_texto = multiples_lineas(salida_multiples_numeros, dic_inverso, codificamos=False)
+    print(salida_multiples_texto)
 
-    dum = texto2numeros(lines[0], dic_alfabeto)
-
-    print(dum)
-
-    dum2 = numeros2texto(dum, dic_inverso)
-
-    print(dum2)
-
-    test_dum = comprobar_que_son_iguales(dum2, lines[0])
+    test_dum = comprobar_mult(salida_multiples_texto, lines_largo)
+    print(test_dum)
 
     # ToDo: que funcione para varias lineas de texto (debería ser sencillo con funciones anidadas)
     # ToDO: guardar salida (dum2) a un fichero.txt y que tenga la opción de mostrar por pantalla
