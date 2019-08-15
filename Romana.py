@@ -6,40 +6,48 @@ import matplotlib.pyplot as plt
 from EncriptacionMain import generar_diccionario_inverso, texto2numeros, numeros2texto, mostrar_diccionario
 
 
-def codificar(texto, descifrado, clave, dic_inverso):
+def codificar(texto, cifrado, clave, dic_inverso):
     if type(texto) == list:
         eslista = True
     else:
         eslista = False
 
-    print(texto, eslista, descifrado, clave)
-
     dic_r_n = generar_dic_romano_numero(clave)
     dic_r_n_inv = generar_diccionario_inverso(dic_r_n, filename='Dic_romana.json', ordenar=False)
     print('######')
-
     # Cifrado
-    entrada = [i for i in texto[0].split()]
-    print(entrada)
-    print('======')
-    transformado_romano = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
-    print(transformado_romano)
-    # ToDo: aquí se guardaría en un fichero .txt
+    if cifrado:
+        if eslista:
+            lista_salida = []
+            for parrafo in range(len(texto)):
+                entrada = [i for i in texto[parrafo].split()]
+                transformado_romano = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
+                print(transformado_romano)
+                print('======')
+                lista_salida.append(transformado_romano)
+        else:
+            entrada = [i for i in texto.split()]
+            lista_salida = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
+            print(lista_salida)
+            print('======')
 
-    # Descifrar
-    # Pasamos a números
-    deshacer = convertir_diccionario(transformado_romano, dic_r_n)  # Esta entrada es una sola linea
-    print(deshacer)
+        print(lista_salida)
+        return lista_salida
 
-    # Pasamos a letras
-    deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
-    print(deshacer2)
+    if not cifrado:
+        # Descifrar
+        # Pasamos a números
+        deshacer = convertir_diccionario(transformado_romano, dic_r_n)  # Esta entrada es una sola linea
+        print(deshacer)
+
+        # Pasamos a letras
+        deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
+        print(deshacer2)
 
 
 def convertir_diccionario(lista, diccionario, espacio=' '):
     salida = ''
     # lista = [i for i in string.split()]
-    print(lista)
     for letra in range(len(lista)):
         if lista[letra] in diccionario:
             salida = salida + '{0}{1}'.format(diccionario[str(lista[letra])], espacio)

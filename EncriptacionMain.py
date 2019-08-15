@@ -183,7 +183,7 @@ def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encrip
     print('Journey Before Destination')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        rom.codificar(input_numeros, descifrado=False, clave=clave, dic_inverso=dic_inverso)
+        rom.codificar(input_numeros, cifrado=True, clave=clave, dic_inverso=dic_inverso)
 
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
         #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado. se guarda en archivo aquí
@@ -205,9 +205,8 @@ def main():
         # dic_inverso = cargar_json('Dic_alf_inv.json')
 
     lines_largo = cargar_txt('base.txt')
-    print(type(dic_alfabeto))
     entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
-    # print(entrada_multiple_numeros)
+    print(entrada_multiple_numeros)
 
     # Ahora que tenemos una serie de números, encriptamos la información
     # ToDo: encriptamos
