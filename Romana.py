@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from EncriptacionMain import generar_diccionario_inverso, texto2numeros, numeros2texto, mostrar_diccionario
 
 
-def codificar(texto, cifrado, clave, dic_inverso):
+def codificar(texto, clave):
     if type(texto) == list:
         eslista = True
     else:
@@ -15,35 +15,41 @@ def codificar(texto, cifrado, clave, dic_inverso):
     dic_r_n = generar_dic_romano_numero(clave)
     dic_r_n_inv = generar_diccionario_inverso(dic_r_n, filename='Dic_romana.json', ordenar=False)
     # Cifrado
-    if cifrado:
-        if eslista:
-            lista_salida = []
-            for parrafo in range(len(texto)):
-                entrada = [i for i in texto[parrafo].split()]
-                transformado_romano = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
-                lista_salida.append(transformado_romano)
-        else:
-            entrada = [i for i in texto.split()]
-            lista_salida = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
+    if eslista:
+        lista_salida = []
+        for parrafo in range(len(texto)):
+            entrada = [i for i in texto[parrafo].split()]
+            transformado_romano = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
+            lista_salida.append(transformado_romano)
+    else:
+        entrada = [i for i in texto.split()]
+        lista_salida = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
 
-        return lista_salida
+    return lista_salida
 
-    if not cifrado:
-        # Descifrar
-        # Pasamos a números
-        if eslista:
-            lista_salida = []
-            for parrafo in range(len(texto)):
-                deshacer = convertir_diccionario(texto[parrafo], dic_r_n)  # Esta entrada es una sola linea
-                deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
-                lista_salida.append(deshacer2)
-        else:
-            deshacer = convertir_diccionario(texto, dic_r_n)  # Esta entrada es una sola linea
-            print(deshacer)
-            lista_salida = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
 
-        print(lista_salida)
-        return lista_salida
+def descodificar(texto, clave, dic_inverso):
+    if type(texto) == list:
+        eslista = True
+    else:
+        eslista = False
+
+    dic_r_n = generar_dic_romano_numero(clave)
+
+    # Descifrar
+    # Pasamos a números
+    if eslista:
+        lista_salida = []
+        for parrafo in range(len(texto)):
+            deshacer = convertir_diccionario(texto[parrafo].strip(), dic_r_n)  # Esta entrada es una sola linea
+            deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
+            lista_salida.append(deshacer2)
+    else:
+        deshacer = convertir_diccionario(texto.strip(), dic_r_n)  # Esta entrada es una sola linea
+        print(deshacer)
+        lista_salida = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
+
+    return lista_salida
 
 
 def convertir_diccionario(lista, diccionario, espacio=' '):
@@ -53,7 +59,7 @@ def convertir_diccionario(lista, diccionario, espacio=' '):
         if lista[letra] in diccionario:
             salida = salida + '{0}{1}'.format(diccionario[str(lista[letra])], espacio)
         else:
-            salida = salida + string[letra] + ' '
+            raise ValueError('No aparece en el diccionario')
 
     return salida
 
