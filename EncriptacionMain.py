@@ -68,7 +68,7 @@ def reiniciar_diccionario(dic_alfabeto):
         generar_diccionario(i, dic_alfabeto, ordenar=False)
 
 
-def comprobar_diccionario_inverso(dic_alf, dic_inv):
+def comprobar_diccionario_inverso(dic_alf, dic_inv, verbose=False):
     """
     Comprueba que todos los valores posibles del diccionario de alfabeto esté en el diccionario inverso. Si no está, o
     tiene un error, genera un diccionario inverso nuevo
@@ -85,10 +85,12 @@ def comprobar_diccionario_inverso(dic_alf, dic_inv):
             break
 
     if hay_que_hacer_cambios:
-        print('Faltan valores. Se vuelve a generar el inverso')
+        if verbose:
+            print('Faltan valores. Se vuelve a generar el inverso')
         return True
     else:
-        print('Estan todos.')
+        if verbose:
+            print('Estan todos.')
         return False
 
 
@@ -179,23 +181,42 @@ def mostrar_por_pantalla(lista):
         print(item)
 
 
+def limpiar_strip_listas(lista):
+    for i in range(len(lista)):
+        lista[i] = lista[i].strip()
+    return lista
+
+
 def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encriptacion='Romana', clave='Password'):
     print('Journey Before Destination')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        texto_cifrado = rom.codificar(input_numeros, cifrado=True, clave=clave, dic_inverso=dic_inverso)
+        texto_cifrado = rom.codificar(input_numeros, clave=clave)
         guardar_txt(texto_cifrado, 'Cifrado_romano.txt')
         print(texto_cifrado)
 
-        # Desciframos
-        texto_descifrado = rom.codificar(texto_cifrado, cifrado=False, clave=clave, dic_inverso=dic_inverso)
+        cargado = limpiar_strip_listas(cargar_txt('Cifrado_romano.txt'))
+        print(cargado)
 
+        # Desciframos
+        texto_descifrado = rom.descodificar(cargado, clave=clave, dic_inverso=dic_inverso)
+        print(texto_descifrado)
+        guardar_txt(texto_descifrado, 'Descifrado_romano.txt')
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
-        #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado. se guarda en archivo aquí
+        #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado.
     return input_numeros
 
 
 def main():
+    # ToDo: meter argsparse para que haga lo siguiente:
+    # ToDo: opción para reiniciar el diccionario
+    # ToDo: listas autoexclusivas para que sólo pueda utilizar un método de cifrado
+    # ToDo: si no inserta nombre de archivo, que pregunte, tomando un valor por defecto
+    # ToDo: idem para guardar archivo
+    # ToDo: clave, por si el cifrado tiene contraseña
+    # ToDo: opción de verbosidad, para que muestre la salida.
+    # ToDo: opción de no guardar la salida en fichero
+    # ToDo: opción de ayuda
     dic_alfabeto = cargar_json()
     # Reinicio manual del diccionario
     if False:
@@ -211,7 +232,6 @@ def main():
 
     lines_largo = cargar_txt('base.txt')
     entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
-    print(entrada_multiple_numeros)
 
     # Ahora que tenemos una serie de números, encriptamos la información
     # ToDo: encriptamos
