@@ -4,9 +4,10 @@ import json
 from Salida_limpia import mostrarresultados, stdrobusta
 import IMGPlot as ImP
 import matplotlib.pyplot as plt
+import Romana as rom
 
 
-def leer_diccionario(nombre, diccionario_, filename='Dic_alfabeto.json', ordenar=True):
+def generar_diccionario(nombre, diccionario_, filename='Dic_alfabeto.json', ordenar=True):
     """
     Busca en el diccionario el valor dado. Si no existe, crea uno nuevo
 
@@ -49,7 +50,9 @@ def generar_diccionario_inverso(dic, filename='Dic_alf_inv.json', ordenar=True):
     nuevo_diccionario = {}
     for key in dic:
         nuevo_diccionario[dic[key]] = key
-    guardar_json(nuevo_diccionario, filename, ordenar=ordenar)
+    if filename is not None:
+        guardar_json(nuevo_diccionario, filename, ordenar=ordenar)
+    return nuevo_diccionario
 
 
 def reiniciar_diccionario(dic_alfabeto):
@@ -62,7 +65,7 @@ def reiniciar_diccionario(dic_alfabeto):
              '.', ',', "'", '"', ':', ';', '!', '?']
 
     for i in lista:
-        leer_diccionario(i, dic_alfabeto, ordenar=False)
+        generar_diccionario(i, dic_alfabeto, ordenar=False)
 
 
 def comprobar_diccionario_inverso(dic_alf, dic_inv):
@@ -176,11 +179,12 @@ def mostrar_por_pantalla(lista):
         print(item)
 
 
-def encrypt_information(input_numeros, tipo_de_encriptacion='Romana'):
+def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encriptacion='Romana', clave='Password'):
     print('Journey Before Destination')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        # ToDo: decidir cómo será la forma de escoger el método de encriptación. Lo más lógico sería usar diccionarios.
+        rom.codificar(input_numeros, descifrado=False, clave=clave, dic_inverso=dic_inverso)
+
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
         #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado. se guarda en archivo aquí
     return input_numeros
@@ -197,22 +201,23 @@ def main():
     # Comprobamos que se puede deshacer el cambio
     hay_que_corregir_inverso = comprobar_diccionario_inverso(dic_alfabeto, dic_inverso)
     if hay_que_corregir_inverso:
-        generar_diccionario_inverso(dic_alfabeto)
-        dic_inverso = cargar_json('Dic_alf_inv.json')
+        dic_inverso = generar_diccionario_inverso(dic_alfabeto)
+        # dic_inverso = cargar_json('Dic_alf_inv.json')
 
     lines_largo = cargar_txt('base.txt')
-
+    print(type(dic_alfabeto))
     entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
-    print(entrada_multiple_numeros)
+    # print(entrada_multiple_numeros)
 
     # Ahora que tenemos una serie de números, encriptamos la información
-    salida_encryption = encrypt_information(entrada_multiple_numeros)
+    # ToDo: encriptamos
+    salida_encryption = encrypt_information(entrada_multiple_numeros, dic_alfabeto=dic_alfabeto, dic_inverso=dic_inverso)
 
     salida_multiples_texto = multiples_lineas(salida_encryption, dic_inverso, codificamos=False)
-    print(salida_multiples_texto)
+    # print(salida_multiples_texto)
 
     test_dum = comprobar_mult(salida_multiples_texto, lines_largo)
-    print(test_dum)
+    # print(test_dum)
 
     guardar_txt(entrada_multiple_numeros, 'archivo_numeros.txt')
     guardar_txt(salida_multiples_texto, 'archivo_texto.txt')
