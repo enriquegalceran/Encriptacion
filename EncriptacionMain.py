@@ -183,7 +183,12 @@ def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encrip
     print('Journey Before Destination')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        rom.codificar(input_numeros, cifrado=True, clave=clave, dic_inverso=dic_inverso)
+        texto_cifrado = rom.codificar(input_numeros, cifrado=True, clave=clave, dic_inverso=dic_inverso)
+        guardar_txt(texto_cifrado, 'Cifrado_romano.txt')
+        print(texto_cifrado)
+
+        # Desciframos
+        texto_descifrado = rom.codificar(texto_cifrado, cifrado=False, clave=clave, dic_inverso=dic_inverso)
 
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
         #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado. se guarda en archivo aquí

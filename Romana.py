@@ -14,7 +14,6 @@ def codificar(texto, cifrado, clave, dic_inverso):
 
     dic_r_n = generar_dic_romano_numero(clave)
     dic_r_n_inv = generar_diccionario_inverso(dic_r_n, filename='Dic_romana.json', ordenar=False)
-    print('######')
     # Cifrado
     if cifrado:
         if eslista:
@@ -22,27 +21,29 @@ def codificar(texto, cifrado, clave, dic_inverso):
             for parrafo in range(len(texto)):
                 entrada = [i for i in texto[parrafo].split()]
                 transformado_romano = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
-                print(transformado_romano)
-                print('======')
                 lista_salida.append(transformado_romano)
         else:
             entrada = [i for i in texto.split()]
             lista_salida = convertir_diccionario(entrada, dic_r_n_inv, espacio='')
-            print(lista_salida)
-            print('======')
 
-        print(lista_salida)
         return lista_salida
 
     if not cifrado:
         # Descifrar
         # Pasamos a números
-        deshacer = convertir_diccionario(transformado_romano, dic_r_n)  # Esta entrada es una sola linea
-        print(deshacer)
+        if eslista:
+            lista_salida = []
+            for parrafo in range(len(texto)):
+                deshacer = convertir_diccionario(texto[parrafo], dic_r_n)  # Esta entrada es una sola linea
+                deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
+                lista_salida.append(deshacer2)
+        else:
+            deshacer = convertir_diccionario(texto, dic_r_n)  # Esta entrada es una sola linea
+            print(deshacer)
+            lista_salida = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
 
-        # Pasamos a letras
-        deshacer2 = convertir_diccionario(deshacer.split(), dic_inverso, espacio='')
-        print(deshacer2)
+        print(lista_salida)
+        return lista_salida
 
 
 def convertir_diccionario(lista, diccionario, espacio=' '):
