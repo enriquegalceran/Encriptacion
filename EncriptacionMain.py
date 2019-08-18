@@ -213,6 +213,7 @@ def main():
     default_password = 'password'
     default_file = 'Cifrado.txt'
     default_cifrar = 'Y'
+    default_save = 'Salida.txt'
     # -----------------------------------------------------------------------------
 
     parser = argparse.ArgumentParser(description="Encriptacion usando multiples metodos")
@@ -226,6 +227,9 @@ def main():
     parser.add_argument("--reiniciar", action="store_true", help='Reinicar el diccionario del alfabeto')
     parser.add_argument('-p', '--password', default=default_password, type=str,
                         help='Password in case it needs a password')
+    parser.add_argument('-ss', '--skipsave', action='store_true', help='Evita guardar el archivo final')
+    parser.add_argument('-s', '--save', default=default_save, type=str, help='Donde guardar.')
+
     grupo_descifrar_cifrar.add_argument('-c', '--cifrar', action="store_true", help='Ciframos el archivo dado')
     grupo_descifrar_cifrar.add_argument('-d', '--descifrar', action="store_true", help='Desciframos el archivo dado')
 
@@ -236,12 +240,6 @@ def main():
 
     args = parser.parse_args()
 
-    # ToDo: meter argsparse para que haga lo siguiente:
-    # ToDo: si no inserta nombre de archivo, que pregunte, tomando un valor por defecto
-    # ToDo: idem para guardar archivo
-    # ToDo: clave, que confirme si tienes una contraseña en caso de que sea necesaria
-    # ToDo: opción de no guardar la salida en fichero
-    # ToDo: opción de ayuda
 
     if args.file == default_file:
         # Cambiar aquí para que meta el archivo en cuestión
@@ -249,6 +247,15 @@ def main():
                or default_file
     else:
         file = args.file
+
+    if not args.skipsave:
+        if args.save == default_save:
+            save = input("Introducir nombre del archivo en el que se quiere guardar:[" + default_save + "] ")\
+                   or default_save
+        else:
+            save = args.save
+    else:
+        save = None
 
     if not any([args.cifrar, args.descifrar]):
         if default_cifrar:
@@ -268,7 +275,12 @@ def main():
         else:
             ciframos = False
 
-    print(ciframos)
+    if any([args.romana]):  # Aquí vienen más opciones de cifrado
+        if args.clave == default_password:
+            clave = input("Este metodo requiere de contraseñas:" + default_password + "] ") or default_password
+        else:
+            clave = args.password
+
     asdfasdfadf
     dic_alfabeto = cargar_json()
     # Reinicio manual del diccionario
@@ -285,6 +297,14 @@ def main():
 
     lines_largo = cargar_txt('base.txt')
     entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
+
+
+
+
+
+
+
+
 
     # Ahora que tenemos una serie de números, encriptamos la información
     # ToDo: encriptamos
