@@ -188,69 +188,37 @@ def limpiar_strip_listas(lista):
     return lista
 
 
-def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encriptacion='Romana', clave='Password'):
-    print('Journey Before Destination')
+def encrypt_information(entrada, cifr, save, dic_alfabeto, dic_inverso,
+                        tipo_de_encriptacion='Romana', clave='Password'):
+    print('Encrypt Information\n#########################################################')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        texto_cifrado = Rom.codificar(input_numeros, clave=clave)
-        guardar_txt(texto_cifrado, 'Cifrado.txt')
-        print(texto_cifrado)
+        if cifr:
+            salida = Rom.codificar(entrada, clave=clave)
+        else:
+            salida = Rom.descodificar(entrada, clave=clave, dic_inverso=dic_inverso)
 
-        cargado = limpiar_strip_listas(cargar_txt('Cifrado.txt'))
-        print(cargado)
-
-        # Desciframos
-        texto_descifrado = Rom.descodificar(cargado, clave=clave, dic_inverso=dic_inverso)
-        print(texto_descifrado)
-        guardar_txt(texto_descifrado, 'Descifrado_romano.txt')
+        if save is not None:
+            guardar_txt(salida, save)
+    else:
+        salida = None
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
         #  única que simplemente le metas la palabra clave y te devuelva el resultado cifrado.
-    return input_numeros
+    return salida
 
 
-def main():
-    # ---------------Valores por defecto-------------------------------------------
-    default_password = 'password'
-    default_file = 'Cifrado.txt'
-    default_cifrar = 'Y'
-    default_save = 'Salida.txt'
-    # -----------------------------------------------------------------------------
-
-    parser = argparse.ArgumentParser(description="Encriptacion usando multiples metodos")
-    group = parser.add_mutually_exclusive_group()
-
-    grupo_cifrado = parser.add_mutually_exclusive_group()
-    grupo_descifrar_cifrar = parser.add_mutually_exclusive_group()
-
-    group.add_argument("-v", "--verbose", action="store_true")
-    group.add_argument("-q", "--quiet", action="store_true")
-    parser.add_argument("--reiniciar", action="store_true", help='Reinicar el diccionario del alfabeto')
-    parser.add_argument('-p', '--password', default=default_password, type=str,
-                        help='Password in case it needs a password')
-    parser.add_argument('-ss', '--skipsave', action='store_true', help='Evita guardar el archivo final')
-    parser.add_argument('-s', '--save', default=default_save, type=str, help='Donde guardar.')
-
-    grupo_descifrar_cifrar.add_argument('-c', '--cifrar', action="store_true", help='Ciframos el archivo dado')
-    grupo_descifrar_cifrar.add_argument('-d', '--descifrar', action="store_true", help='Desciframos el archivo dado')
-
-    grupo_cifrado.add_argument('-rom', '--romana', action="store_true", help='Metodo Romano')
-    # Aquí vendrán el resto de los métodos
-
-    parser.add_argument('-f', '--file', default=default_file, type=str, help='sobre el que operar')
-
-    args = parser.parse_args()
-
-
+def argumentos_entrada(args, default_file, default_save, default_cifrar, default_password, default_tipo):
+    # Aquí vienen las comprobaciones de que los argumentos de entrada sean correctos.
     if args.file == default_file:
         # Cambiar aquí para que meta el archivo en cuestión
-        file = input("Introducir nombre del archivo que se quiere cifrar/descifrar:[" + default_file + "] ")\
+        file = input("Introducir nombre del archivo que se quiere cifrar/descifrar:[" + default_file + "] ") \
                or default_file
     else:
         file = args.file
 
     if not args.skipsave:
         if args.save == default_save:
-            save = input("Introducir nombre del archivo en el que se quiere guardar:[" + default_save + "] ")\
+            save = input("Introducir nombre del archivo en el que se quiere guardar:[" + default_save + "] ") \
                    or default_save
         else:
             save = args.save
@@ -280,8 +248,55 @@ def main():
             clave = input("Este metodo requiere de contraseñas:" + default_password + "] ") or default_password
         else:
             clave = args.password
+    else:
+        clave = None
 
-    asdfasdfadf
+    if any([args.romana]):
+        if args.romana:
+            tipo = 'Romana'
+        else:
+            tipo = default_tipo
+    else:
+        raise ValueError('No hay tipo')
+
+    return tipo, file, save, ciframos, clave
+
+
+def main():
+    # ---------------Valores por defecto-------------------------------------------
+    default_password = 'password'
+    default_file = 'Cifrado.txt'
+    default_cifrar = 'Y'
+    default_save = 'Salida.txt'
+    default_tipo = 'Romana'
+    # -----------------------------------------------------------------------------
+
+    parser = argparse.ArgumentParser(description="Encriptacion usando multiples metodos")
+    group = parser.add_mutually_exclusive_group()
+
+    grupo_cifrado = parser.add_mutually_exclusive_group()
+    grupo_descifrar_cifrar = parser.add_mutually_exclusive_group()
+
+    group.add_argument("-v", "--verbose", action="store_true")
+    group.add_argument("-q", "--quiet", action="store_true")
+    parser.add_argument("--reiniciar", action="store_true", help='Reinicar el diccionario del alfabeto')
+    parser.add_argument('-p', '--password', default=default_password, type=str,
+                        help='Password in case it needs a password')
+    parser.add_argument('-ss', '--skipsave', action='store_true', help='Evita guardar el archivo final')
+    parser.add_argument('-s', '--save', default=default_save, type=str, help='Donde guardar.')
+
+    grupo_descifrar_cifrar.add_argument('-c', '--cifrar', action="store_true", help='Ciframos el archivo dado')
+    grupo_descifrar_cifrar.add_argument('-d', '--descifrar', action="store_true", help='Desciframos el archivo dado')
+
+    grupo_cifrado.add_argument('-rom', '--romana', action="store_true", help='Metodo Romano')
+    # Aquí vendrán el resto de los métodos
+
+    parser.add_argument('-f', '--file', default=default_file, type=str, help='sobre el que operar')
+
+    args = parser.parse_args()
+
+    tipo, file, save, ciframos, clave = argumentos_entrada(args, default_file, default_save, default_cifrar, default_password, default_tipo)
+
     dic_alfabeto = cargar_json()
     # Reinicio manual del diccionario
     if args.reiniciar:
@@ -295,20 +310,16 @@ def main():
         dic_inverso = generar_diccionario_inverso(dic_alfabeto)
         # dic_inverso = cargar_json('Dic_alf_inv.json')
 
-    lines_largo = cargar_txt('base.txt')
+    lines_largo = cargar_txt(file)
+
+    # cargado = limpiar_strip_listas(cargar_txt('Cifrado.txt'))  # ToDo: Mirar si esto sirve de algo
+
     entrada_multiple_numeros = multiples_lineas(lines_largo, dic_alfabeto)
-
-
-
-
-
-
-
-
 
     # Ahora que tenemos una serie de números, encriptamos la información
     # ToDo: encriptamos
-    salida_encryption = encrypt_information(entrada_multiple_numeros, dic_alfabeto=dic_alfabeto, dic_inverso=dic_inverso)
+    salida_encryption = encrypt_information(entrada_multiple_numeros, tipo_de_encriptacion=tipo, cifr=ciframos,
+                                            save=save, dic_alfabeto=dic_alfabeto, dic_inverso=dic_inverso, clave=clave)
 
     salida_multiples_texto = multiples_lineas(salida_encryption, dic_inverso, codificamos=False)
     # print(salida_multiples_texto)
