@@ -4,7 +4,8 @@ import json
 from Salida_limpia import mostrarresultados, stdrobusta
 import IMGPlot as ImP
 import matplotlib.pyplot as plt
-import Romana as rom
+import Romana as Rom
+import argparse
 
 
 def generar_diccionario(nombre, diccionario_, filename='Dic_alfabeto.json', ordenar=True):
@@ -191,15 +192,15 @@ def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encrip
     print('Journey Before Destination')
     if tipo_de_encriptacion == 'Romana':
         print('Romana')
-        texto_cifrado = rom.codificar(input_numeros, clave=clave)
-        guardar_txt(texto_cifrado, 'Cifrado_romano.txt')
+        texto_cifrado = Rom.codificar(input_numeros, clave=clave)
+        guardar_txt(texto_cifrado, 'Cifrado.txt')
         print(texto_cifrado)
 
-        cargado = limpiar_strip_listas(cargar_txt('Cifrado_romano.txt'))
+        cargado = limpiar_strip_listas(cargar_txt('Cifrado.txt'))
         print(cargado)
 
         # Desciframos
-        texto_descifrado = rom.descodificar(cargado, clave=clave, dic_inverso=dic_inverso)
+        texto_descifrado = Rom.descodificar(cargado, clave=clave, dic_inverso=dic_inverso)
         print(texto_descifrado)
         guardar_txt(texto_descifrado, 'Descifrado_romano.txt')
         # ToDo: El metodo romano que esté en un archivo aparte y que lo ejecute directamente desde allí en una función
@@ -208,18 +209,70 @@ def encrypt_information(input_numeros, dic_alfabeto, dic_inverso, tipo_de_encrip
 
 
 def main():
+    # ---------------Valores por defecto-------------------------------------------
+    default_password = 'password'
+    default_file = 'Cifrado.txt'
+    default_cifrar = 'Y'
+    # -----------------------------------------------------------------------------
+
+    parser = argparse.ArgumentParser(description="Encriptacion usando multiples metodos")
+    group = parser.add_mutually_exclusive_group()
+
+    grupo_cifrado = parser.add_mutually_exclusive_group()
+    grupo_descifrar_cifrar = parser.add_mutually_exclusive_group()
+
+    group.add_argument("-v", "--verbose", action="store_true")
+    group.add_argument("-q", "--quiet", action="store_true")
+    parser.add_argument("--reiniciar", action="store_true", help='Reinicar el diccionario del alfabeto')
+    parser.add_argument('-p', '--password', default=default_password, type=str,
+                        help='Password in case it needs a password')
+    grupo_descifrar_cifrar.add_argument('-c', '--cifrar', action="store_true", help='Ciframos el archivo dado')
+    grupo_descifrar_cifrar.add_argument('-d', '--descifrar', action="store_true", help='Desciframos el archivo dado')
+
+    grupo_cifrado.add_argument('-rom', '--romana', action="store_true", help='Metodo Romano')
+    # Aquí vendrán el resto de los métodos
+
+    parser.add_argument('-f', '--file', default=default_file, type=str, help='sobre el que operar')
+
+    args = parser.parse_args()
+
     # ToDo: meter argsparse para que haga lo siguiente:
-    # ToDo: opción para reiniciar el diccionario
-    # ToDo: listas autoexclusivas para que sólo pueda utilizar un método de cifrado
     # ToDo: si no inserta nombre de archivo, que pregunte, tomando un valor por defecto
     # ToDo: idem para guardar archivo
-    # ToDo: clave, por si el cifrado tiene contraseña
-    # ToDo: opción de verbosidad, para que muestre la salida.
+    # ToDo: clave, que confirme si tienes una contraseña en caso de que sea necesaria
     # ToDo: opción de no guardar la salida en fichero
     # ToDo: opción de ayuda
+
+    if args.file == default_file:
+        # Cambiar aquí para que meta el archivo en cuestión
+        file = input("Introducir nombre del archivo que se quiere cifrar/descifrar:[" + default_file + "] ")\
+               or default_file
+    else:
+        file = args.file
+
+    if not any([args.cifrar, args.descifrar]):
+        if default_cifrar:
+            ciframos = input("Ciframos?[Y]/N: ") or default_cifrar
+        else:
+            ciframos = input("Ciframos?Y/[N]: ") or default_cifrar
+
+        if ciframos in ['Y', 'y', '1']:
+            ciframos = True
+        elif ciframos in ['N', 'n', '0']:
+            ciframos = False
+        else:
+            raise ValueError('No es una entrada válida. Se busca Y/N, y/n, 1/0')
+    else:
+        if args.cifrar:
+            ciframos = True
+        else:
+            ciframos = False
+
+    print(ciframos)
+    asdfasdfadf
     dic_alfabeto = cargar_json()
     # Reinicio manual del diccionario
-    if False:
+    if args.reiniciar:
         reiniciar_diccionario(dic_alfabeto)
 
     dic_inverso = cargar_json('Dic_alf_inv.json')
